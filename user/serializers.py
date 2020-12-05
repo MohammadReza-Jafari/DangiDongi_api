@@ -1,8 +1,12 @@
 import re
 from rest_framework import serializers
-from django.contrib.auth import get_user_model
+from django.contrib.auth import get_user_model, authenticate
+from django.contrib.auth.models import update_last_login
 from django.utils.translation import gettext as _
-from django.core.exceptions import ValidationError
+from rest_framework_jwt.settings import api_settings
+
+JWT_PAYLOAD_HANDLER = api_settings.JWT_PAYLOAD_HANDLER
+JWT_ENCODE_HANDLER = api_settings.JWT_ENCODE_HANDLER
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -68,3 +72,63 @@ class UserSerializer(serializers.ModelSerializer):
                 code='invalid'
             )
         return value
+
+
+class UserTokenSerializer(serializers.Serializer):
+
+    class Meta:
+        fields = ('email', 'password', 'token')
+        extra_kwargs = {
+            'password': {
+                'style': {
+                    'input_type': 'password'
+                },
+                'max_length': 5,
+                'write_only': True,
+                'error_message': {
+                    'required': 'رمزعبور را وارد کنید'
+                }
+            },
+            'email': {
+                'error_message': {
+                    'required': 'ایمیل را وارد کنید'
+                }
+            }
+        }
+
+    email = serializers.EmailField(max_length=255, required=True)
+    password = serializers.CharField(max_length=255, write_only=True, required=True)
+    token = serializers.CharField(max_length=255, read_only=True)
+
+    def validate(self, attrs):
+        email = attrs.get('email', None)
+        password = attrs.get('password', None)
+
+        user = authenticate(email=email, password=password)
+
+        if not user:
+            raise serializers.ValidationError(
+                'کاربر با این اطلاعات پیدا نشد.',
+                code='INVALID_CREDENTIAL'
+            )
+
+        if not user.is_active:
+            raise serializers.ValidationError(
+                'حساب کاربری شما فعال نمی باشد',
+                code='USER_NOT_ACTIVE'
+            )
+
+        try:
+            payload = JWT_PAYLOAD_HANDLER(user)
+            token = JWT_ENCODE_HANDLER(payload)
+            update_last_login(None, user)
+        except get_user_model().DoesNotExists:
+            raise serializers.ValidationError(
+                'کاربر با ایمیل داده شده پیدا نشد.',
+                code='INVALID_CREDENTIAL'
+            )
+
+        return {
+            'email': user.email,
+            'token': token
+        }

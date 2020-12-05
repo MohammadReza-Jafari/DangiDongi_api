@@ -1,10 +1,10 @@
-from django.urls import path, include
+from django.urls import path, include, reverse
 
 from . import views
 
 app_name = 'user'
 urlpatterns = [
-    path('identity/', include([
-        path('register/', views.RegisterUser.as_view(), name='register'),
-    ]))
+    path('register/', views.RegisterUserView.as_view(), name='register'),
+    path('get-token/', views.LoginUserView.as_view(), name='get-toke'),
+    path('profile/', views.GetProfileView.as_view(), name='profile')
 ]

@@ -48,7 +48,10 @@ class User(AbstractBaseUser, PermissionsMixin):
         blank=False,
         null=False,
         unique=True,
-        verbose_name='email address'
+        verbose_name='email address',
+        error_messages={
+            'unique': 'کاربری با این ایمیل قبلا ثبت نام کرده است.'
+        }
     )
     first_name = models.CharField(max_length=30, null=False, blank=False)
     last_name = models.CharField(max_length=50, null=False, blank=False)

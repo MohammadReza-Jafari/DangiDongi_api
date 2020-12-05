@@ -27,6 +27,7 @@ urlpatterns = [
     path('api/', include([
         path('doc/', schema_view.with_ui('swagger', cache_timeout=0), name='api-document'),
         path('identity/', include('user.urls')),
+        path('wallet/', include('wallet.urls'))
     ]))
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

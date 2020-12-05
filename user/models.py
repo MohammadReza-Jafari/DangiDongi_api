@@ -7,6 +7,8 @@ from django.core.exceptions import ValidationError
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.core.validators import FileExtensionValidator
 
+from core import senders
+
 
 def get_save_image_path(instance, filename: str):
     ext = filename.split('.')[-1]
@@ -28,6 +30,14 @@ class UserManager(BaseUserManager):
         user.activation_code = uuid.uuid4()
 
         user.save(using=self._db)
+
+        senders.send_email(
+            'activate',
+            'تایید حساب کاربری دنگ پرداز',
+            {'code': user.activation_code},
+            user.email
+        )
+
         return user
 
     def create_superuser(self, email, password, **kwargs):

@@ -58,7 +58,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         blank=False,
         null=False,
         unique=True,
-        verbose_name='email address',
+        verbose_name='ایمیل',
         error_messages={
             'unique': 'کاربری با این ایمیل قبلا ثبت نام کرده است.'
         }

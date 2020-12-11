@@ -74,6 +74,59 @@ class UserSerializer(serializers.ModelSerializer):
         return value
 
 
+class EditUserSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = get_user_model()
+        fields = ('email', 'first_name', 'last_name', 'profile_image', 'phone_number')
+        extra_kwargs = {
+            'email': {
+                'error_messages': {
+                    'blank': 'ایمیل را وارد کنید.',
+                    'unique': 'کاربری با این ایمیل موجود می باشد.'
+                }
+            },
+            'first_name': {
+                'error_messages': {
+                    'max_length': 'نام نهایتا می تواند 30 کاراکتر باشد.',
+                    'blank': 'نام را وارد کنید.'
+                }
+            },
+            'last_name': {
+                'error_messages': {
+                    'max_length': 'نام خانوادگی نهایتا می تواند 50 کاراکتر باشد.',
+                    'blank': 'نام خانوادگی را وارد کنید.'
+                }
+            },
+            'phone_number': {
+                'error_messages': {
+                    'max_length': 'ماره تلفن نهایتا می تواند 13 کاراکتر باشد.'
+                }
+            },
+            'profile_image': {
+                'error_messages': {
+                    'invalid_extension': 'فقط فایل های با پسوند jpg و png و jpeg قابل قبول می باشند'
+                }
+            }
+        }
+
+    def validate_phone_number(self, value):
+        if not value:
+            return value
+            # raise serializers.ValidationError(
+            #     _('شماره تلفن را وارد کنید.')
+            # )
+        if not re.match(
+            pattern="(0|\+98)?([ ]|-|[()]){0,2}9[1|2|3|4]([ ]|-|[()]){0,2}(?:[0-9]([ ]|-|[()]){0,2}){8}",
+            string=value
+        ):
+            raise serializers.ValidationError(
+                _('شماره تلفن وارد شده معتبر نمی باشد.'),
+                code='invalid'
+            )
+        return value
+
+
 class UserTokenSerializer(serializers.Serializer):
 
     class Meta:
@@ -83,7 +136,7 @@ class UserTokenSerializer(serializers.Serializer):
                 'style': {
                     'input_type': 'password'
                 },
-                'max_length': 5,
+                'min_length': 5,
                 'write_only': True,
                 'error_message': {
                     'required': 'رمزعبور را وارد کنید'
@@ -132,3 +185,46 @@ class UserTokenSerializer(serializers.Serializer):
             'email': user.email,
             'token': token
         }
+
+
+class ChangePasswordSerializer(serializers.Serializer):
+    class Meta:
+        fields = ('old_password', 'new_password')
+        extra_kwargs = {
+            'old_password': {
+                'min_length': 5,
+                'write_only': True,
+                'style': {
+                    'input_type': 'password'
+                }
+            },
+            'new_password': {
+                'min_length': 5,
+                'write_only': True,
+                'style': {
+                    'input_type': 'password'
+                }
+            }
+        }
+    old_password = serializers.CharField(required=True)
+    new_password = serializers.CharField(required=True)
+
+
+class ResetPasswordSerializer(serializers.Serializer):
+    class Meta:
+        fields = ('reset_code', 'new_password')
+        extra_kwargs = {
+            'new_password': {
+                'min_length': 5,
+                'style': {
+                    'input_type': 'password'
+                },
+                'write_only': True,
+                'error_messages': {
+                    'required': 'رمز جدید را وارد کنید',
+                    'min_length': 'رمز باید بیشتر از 5 کاراکتر باشد'
+                }
+            }
+        }
+    reset_code = serializers.IntegerField(required=True)
+    new_password = serializers.CharField(min_length=5, required=True)

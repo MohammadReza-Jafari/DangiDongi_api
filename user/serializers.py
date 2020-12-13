@@ -5,6 +5,8 @@ from django.contrib.auth.models import update_last_login
 from django.utils.translation import gettext as _
 from rest_framework_jwt.settings import api_settings
 
+from wallet.serializers import WalletSerializer
+
 JWT_PAYLOAD_HANDLER = api_settings.JWT_PAYLOAD_HANDLER
 JWT_ENCODE_HANDLER = api_settings.JWT_ENCODE_HANDLER
 
@@ -75,10 +77,12 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class EditUserSerializer(serializers.ModelSerializer):
+    wallet = WalletSerializer()
 
     class Meta:
         model = get_user_model()
-        fields = ('email', 'first_name', 'last_name', 'profile_image', 'phone_number')
+        depth = 1
+        fields = ('email', 'first_name', 'last_name', 'profile_image', 'phone_number', 'wallet')
         extra_kwargs = {
             'email': {
                 'error_messages': {
@@ -107,6 +111,9 @@ class EditUserSerializer(serializers.ModelSerializer):
                 'error_messages': {
                     'invalid_extension': 'فقط فایل های با پسوند jpg و png و jpeg قابل قبول می باشند'
                 }
+            },
+            'wallet': {
+                'read_only': True
             }
         }
 

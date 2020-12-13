@@ -74,6 +74,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     activation_code = models.CharField(null=True, default=None, max_length=255)
     reset_code = models.IntegerField(null=True, default=None)
 
+
     is_active = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)

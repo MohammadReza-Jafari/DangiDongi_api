@@ -8,6 +8,7 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, Permis
 from django.core.validators import FileExtensionValidator
 
 from core import senders
+from wallet.models import Wallet
 
 
 def get_save_image_path(instance, filename: str):
@@ -30,7 +31,6 @@ class UserManager(BaseUserManager):
         user.activation_code = uuid.uuid4()
 
         user.save(using=self._db)
-
         senders.send_email(
             'activate',
             'تایید حساب کاربری دنگ پرداز',
@@ -71,6 +71,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         validators=[FileExtensionValidator(allowed_extensions=['jpeg', 'png', 'jpg'])]
     )
     phone_number = models.CharField(null=True, blank=True, max_length=13)
+    wallet = models.OneToOneField(Wallet, models.SET_NULL, null=True, related_name='user')
     activation_code = models.CharField(null=True, default=None, max_length=255)
     reset_code = models.IntegerField(null=True, default=None)
 

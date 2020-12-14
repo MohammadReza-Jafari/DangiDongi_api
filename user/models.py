@@ -29,6 +29,9 @@ class UserManager(BaseUserManager):
         user = self.model(email=self.normalize_email(email), **kwargs)
         user.set_password(password)
         user.activation_code = uuid.uuid4()
+        w = Wallet()
+        w.save()
+        user.wallet_id = w.id
 
         user.save(using=self._db)
         senders.send_email(

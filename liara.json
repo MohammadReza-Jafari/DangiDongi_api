@@ -1,0 +1,14 @@
+{
+  "platform": "django",
+  "app": "dongpardaz",
+  "disks": [
+    {
+      "name": "media",
+      "mountTo": "media"
+    },
+    {
+      "name": "static",
+      "mountTo": "static"
+    }
+  ]
+}

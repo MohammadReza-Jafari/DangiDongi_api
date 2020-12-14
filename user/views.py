@@ -21,8 +21,7 @@ class RegisterUserView(generics.CreateAPIView):
 
 
 class LoginUserView(generics.RetrieveAPIView):
-
-    permission_classes = (permissions.AllowAny, )
+    permission_classes = (permissions.AllowAny,)
     serializer_class = serializers.UserTokenSerializer
 
     def post(self, request):
@@ -39,7 +38,11 @@ class LoginUserView(generics.RetrieveAPIView):
 
 
 class GetProfileView(generics.RetrieveUpdateAPIView):
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly, )
+    """
+    token needed
+     * pattern is "Bearer token-value"
+    """
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
     serializer_class = serializers.EditUserSerializer
     authentication_class = JSONWebTokenAuthentication
 
@@ -78,13 +81,13 @@ class ActivateUserView(APIView):
 
 
 class ChangePasswordView(APIView):
-
-    permission_classes = (permissions.IsAuthenticated, )
-    authentication_classes = (JSONWebTokenAuthentication, )
+    permission_classes = (permissions.IsAuthenticated,)
+    authentication_classes = (JSONWebTokenAuthentication,)
 
     @swagger_auto_schema(
-        request_body= serializers.ChangePasswordSerializer,
-        operation_description= 'تغییر رمز حساب کاربری',
+        request_body=serializers.ChangePasswordSerializer,
+        operation_description="تغییر رمز حساب کاربری\n\n"
+                              "token needed\n * pattern is 'Bearer token-value' in header",
         responses={
             status.HTTP_200_OK: 'every thing okay',
             status.HTTP_400_BAD_REQUEST: 'something is wrong'

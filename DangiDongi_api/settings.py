@@ -17,7 +17,8 @@ SECRET_KEY = os.getenv('SECRET_KEY', 'SECRET_KEY is not set')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG', 'DEBUG is not set')
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
+CORS_ORIGIN_ALLOW_ALL = True
 
 
 # Application definition
@@ -32,7 +33,7 @@ INSTALLED_APPS = [
     # third party
     'rest_framework',
     'drf_yasg',
-    'corsheaders'
+    'corsheaders',
 
     # apps
     'user',
@@ -126,7 +127,6 @@ REST_FRAMEWORK = {
     )
 }
 
-CORS_ALLOW_ALL_ORIGINS = True
 
 JWT_AUTH = {
     'JWT_ENCODE_HANDLER':

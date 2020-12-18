@@ -32,6 +32,7 @@ INSTALLED_APPS = [
     # third party
     'rest_framework',
     'drf_yasg',
+    'corsheaders'
 
     # apps
     'user',
@@ -42,6 +43,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -123,6 +125,8 @@ REST_FRAMEWORK = {
         'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
     )
 }
+
+CORS_ALLOW_ALL_ORIGINS = True
 
 JWT_AUTH = {
     'JWT_ENCODE_HANDLER':

@@ -193,26 +193,44 @@ class UserTokenSerializer(serializers.Serializer):
 
 
 class ChangePasswordSerializer(serializers.Serializer):
+    old_password = serializers.CharField(
+        required=True,
+        min_length=5,
+        error_messages={
+            'min_length': 'رمز باید از 5 کاراکتر بیشتر باشد'
+        }
+    )
+
+    new_password = serializers.CharField(
+        required=True,
+        min_length=5,
+        error_messages={
+            'min_length': 'رمز باید از 5 کاراکتر بیشتر باشد'
+        }
+    )
+
     class Meta:
         fields = ('old_password', 'new_password')
         extra_kwargs = {
             'old_password': {
-                'min_length': 5,
                 'write_only': True,
                 'style': {
                     'input_type': 'password'
+                },
+                'error_messages': {
+                    'min_length': 'رمز باید از 5 کاراکتر بیشتر باشد'
                 }
             },
             'new_password': {
-                'min_length': 5,
                 'write_only': True,
                 'style': {
                     'input_type': 'password'
+                },
+                'error_messages': {
+                    'min_length': 'رمز باید از 5 کاراکتر بیشتر باشد'
                 }
             }
         }
-    old_password = serializers.CharField(required=True)
-    new_password = serializers.CharField(required=True)
 
 
 class ResetPasswordSerializer(serializers.Serializer):

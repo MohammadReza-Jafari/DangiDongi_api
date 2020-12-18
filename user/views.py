@@ -99,6 +99,22 @@ class ChangePasswordView(APIView):
         if ser.is_valid():
             user = request.user
 
+            if not user.check_password(ser.validated_data.get('old_password')):
+                response = {
+                    'success': False,
+                    'status': status.HTTP_400_BAD_REQUEST,
+                    'message': 'رمز فعلی صحیح نمی باشد.'
+                }
+                return Response(response, status=status.HTTP_400_BAD_REQUEST)
+
+            if ser.validated_data['old_password'] == ser.validated_data['new_password']:
+                response = {
+                    'success': False,
+                    'status': status.HTTP_400_BAD_REQUEST,
+                    'message': 'رمز فعلی و رمز جدید یکسان می باشند'
+                }
+                return Response(response, status=status.HTTP_400_BAD_REQUEST)
+
             user.set_password(ser.validated_data['new_password'])
             user.save()
 
@@ -107,6 +123,7 @@ class ChangePasswordView(APIView):
                 'message': 'با موفقیت رمز عوض شد.',
                 'status': status.HTTP_200_OK
             }
+
             return Response(response, status=status.HTTP_200_OK)
 
         return Response(ser.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -141,7 +158,7 @@ class GetResetCodeView(APIView):
         try:
             validate_email(email)
             try:
-                user = get_object_or_404(get_user_model(), emial=email)
+                user = get_object_or_404(get_user_model(), email=email)
                 reset_code = randint(100000, 999999)
                 user.reset_code = reset_code
                 user.save()

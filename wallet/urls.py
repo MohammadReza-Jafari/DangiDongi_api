@@ -3,7 +3,7 @@ from django.urls import path
 from wallet import views
 
 
+app_name='wallet'
 urlpatterns = [
-    path('test/', views.TestView.as_view(), name='test'),
-    path('test2/', views.test2, name='test2')
+    path('charge/', views.ChargeWalletView.as_view(), name='charge')
 ]

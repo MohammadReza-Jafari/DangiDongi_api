@@ -38,7 +38,8 @@ INSTALLED_APPS = [
     # apps
     'user',
     'wallet',
-    'core'
+    'core',
+    'group'
 ]
 
 MIDDLEWARE = [

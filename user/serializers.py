@@ -15,8 +15,11 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = get_user_model()
-        fields = ('email', 'first_name', 'last_name', 'profile_image', 'phone_number', 'password')
+        fields = ('id', 'email', 'first_name', 'last_name', 'nick_name', 'profile_image', 'phone_number', 'password')
         extra_kwargs = {
+            'id': {
+                'read_only': True
+            },
             'password': {
                 'min_length': 5,
                 'write_only': True,
@@ -80,7 +83,7 @@ class EditUserSerializer(serializers.ModelSerializer):
     wallet = serializers.SlugRelatedField(slug_field='amount', read_only=True)
     class Meta:
         model = get_user_model()
-        fields = ('email', 'first_name', 'last_name', 'profile_image', 'phone_number', 'wallet')
+        fields = ('email', 'first_name', 'last_name', 'nick_name', 'profile_image', 'phone_number', 'wallet')
         extra_kwargs = {
             'email': {
                 'error_messages': {
